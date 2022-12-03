@@ -25,24 +25,64 @@ export const RPSScoreCard = (path: PathOrFileDescriptor) => {
         break;
     }
     // Here is where part 2 changes our code.
+    let conditions: State;
     switch (Moves[1]) {
       case "X":
-        Hero.setIntent = "Rock";
+        conditions = "Lose";
         break;
       case "Y":
-        Hero.setIntent = "Paper";
+        conditions = "Draw";
         break;
       case "Z":
-        Hero.setIntent = "Scissors";
+        conditions = "Win";
         break;
     }
 
-    Game(Opponent, Hero);
+    GameGuide(Hero, Opponent, conditions);
+    Game(Hero, Opponent);
   });
-
-  console.log(`${Opponent.Name} has a Score of ${Opponent.Score}`);
-  console.log(`${Hero.Name} has a Score of ${Hero.Score}`);
+  console.log(
+    "GAME!",
+    Hero.Score > Opponent.Score ? Hero.Name : Opponent.Name,
+    "Wins!"
+  );
+  console.log("Final Score:", Hero.Name, ":", Hero.Score);
+  console.log("Final Score:", Opponent.Name, ":", Opponent.Score);
 };
+
+function GameGuide(Hero: Player, Opponent: Player, conditions: State) {
+  if (conditions == "Draw") {
+    Hero.setIntent = Opponent.Shot;
+  }
+
+  if (conditions == "Lose") {
+    switch (Opponent.Shot) {
+      case "Rock":
+        Hero.setIntent = "Scissors";
+        break;
+      case "Paper":
+        Hero.setIntent = "Rock";
+        break;
+      case "Scissors":
+        Hero.setIntent = "Paper";
+        break;
+    }
+  }
+
+  if (conditions == "Win") {
+    switch (Opponent.Shot) {
+      case "Paper":
+        Hero.setIntent = "Scissors";
+        break;
+      case "Rock":
+        Hero.setIntent = "Paper";
+        break;
+      case "Scissors":
+        Hero.setIntent = "Rock";
+        break;
+    }
+  }
+}
 
 const Game = (Player1: Player, Player2: Player) => {
   if (Player1.Shot == Player2.Shot) {
@@ -53,37 +93,31 @@ const Game = (Player1: Player, Player2: Player) => {
   if (Player1.Shot == "Scissors" && Player2.Shot == "Paper") {
     Player1.addScore = "Win";
     Player2.addScore = "Lose";
-    // console.log(`${Player1.Name} Wins!`);
   }
 
   if (Player1.Shot == "Rock" && Player2.Shot == "Scissors") {
     Player1.addScore = "Win";
     Player2.addScore = "Lose";
-    // console.log(`${Player1.Name} Wins!`);
   }
 
   if (Player1.Shot == "Paper" && Player2.Shot == "Rock") {
     Player1.addScore = "Win";
     Player2.addScore = "Lose";
-    // console.log(`${Player1.Name} Wins!`);
   }
 
   if (Player2.Shot == "Scissors" && Player1.Shot == "Paper") {
     Player2.addScore = "Win";
     Player1.addScore = "Lose";
-    // console.log(`${Player2.Name} Wins!`);
   }
 
   if (Player2.Shot == "Rock" && Player1.Shot == "Scissors") {
     Player2.addScore = "Win";
     Player1.addScore = "Lose";
-    // console.log(`${Player2.Name} Wins!`);
   }
 
   if (Player2.Shot == "Paper" && Player1.Shot == "Rock") {
     Player2.addScore = "Win";
     Player1.addScore = "Lose";
-    // console.log(`${Player2.Name} Wins!`);
   }
 };
 
