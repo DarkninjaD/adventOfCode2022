@@ -1,24 +1,51 @@
 import fs, { PathOrFileDescriptor } from "fs";
 
-/* TODO
-  [] - Take Two Arrays and find Matching Char
-  X  - Return Points based off Char & Tally Points
-*/
+type RuckSackFlat = Set<string>;
 
 export const SortSack = (path: PathOrFileDescriptor) => {
-  type RuckSack = [String, String];
-
-  const ruckSackList: RuckSack[] = fs
+  const ruckSackList: string[] = fs
     .readFileSync(path, { encoding: "utf-8" })
-    .split(/\n/)
-    .map((str) => {
-      return [str.slice(0, str.length / 2), str.slice(str.length / 2)];
-    });
+    .split(/\n/);
 
-  console.log(pointUp(sortRuckSack(ruckSackList)));
+  let matchList = [];
+
+  const ruckSackFlatList: RuckSackFlat[] = ruckSackList.map(
+    (elm) => new Set(elm.split(""))
+  );
+  const ruckSackListCompartments = ruckSackList.map((elm) => [
+    elm.slice(0, elm.length / 2),
+    elm.slice(elm.length / 2),
+  ]);
+
+  NSetArray(ruckSackFlatList, 3).forEach((ruckSet) => {
+    matchList.push(sortRuckSackBy3(ruckSet[0], ruckSet[1], ruckSet[2]));
+  });
+
+  console.log("Part one: ", pointUp(sortRuckSack(ruckSackListCompartments)));
+  console.log("Part two: ", pointUp(matchList));
 };
 
-const sortRuckSack = (ruckSackList: [String, String][]) => {
+const sortRuckSackBy3 = (
+  ruckSackA: RuckSackFlat,
+  ruckSackB: RuckSackFlat,
+  ruckSackC: RuckSackFlat
+) => {
+  let match = "";
+  ruckSackA.forEach((charA) => {
+    ruckSackB.forEach((charB) => {
+      if (charA == charB) {
+        ruckSackC.forEach((charC) => {
+          if (charC == charB && charC == charA) {
+            match = charA;
+          }
+        });
+      }
+    });
+  });
+  return match;
+};
+
+const sortRuckSack = (ruckSackList: string[][]) => {
   let found = [];
 
   ruckSackList.forEach((rucksack) => {
@@ -46,4 +73,18 @@ const pointUp = (charList) => {
     total += baseList.findIndex((elm) => elm == foundChar) + 1;
   });
   return total;
+};
+
+// Takes a array turns it into a array of nth. ie => ([1,2,3,4], 2) => [[1,2],[3,4]]
+const NSetArray = (array: Array<any>, nth: number) => {
+  let newArray = [];
+  let holder = [];
+  array.forEach((elm) => {
+    holder.push(elm);
+    if (holder.length == nth) {
+      newArray.push(holder);
+      holder = [];
+    }
+  });
+  return newArray;
 };
