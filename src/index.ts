@@ -1,6 +1,7 @@
 import { SortSack } from "./Day3/SortSack.js";
 import { CaloriesCount } from "./Day1/CaloriesCount.js";
 import { RPSScoreCard } from "./Day2/RPSScoreCard.js";
+import { decoupleWork } from "./Day4/decoupleWork.js";
 
 const Day: number = 3;
 const dataPath = "./src/data/";
@@ -12,4 +13,6 @@ switch (Day) {
     RPSScoreCard(`${dataPath}/RPSGuide.txt`);
   case 3:
     SortSack(`${dataPath}/SackList.txt`);
+  case 4:
+    decoupleWork(`${dataPath}/SectionAssignmentPair.txt`);
 }
