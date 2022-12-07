@@ -7,6 +7,7 @@ export const decoupleWork = (path: PathOrFileDescriptor) => {
     .map((elm) => elm.split(","));
   sectionAssignmentList.forEach((elm) => OverLap.Find(elm));
   console.log(OverLap.foundContains);
+  console.log(OverLap.foundOverLaps);
 };
 
 const OverLap = {
