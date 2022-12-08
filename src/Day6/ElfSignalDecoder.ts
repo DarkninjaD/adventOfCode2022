@@ -1,53 +1,19 @@
 import fs, { PathOrFileDescriptor } from "fs";
 
 export const ElfSignalDecoder = (path: PathOrFileDescriptor) => {
-  const rawSignal = fs.readFileSync(path, { encoding: "utf-8" });
+  const signal = fs.readFileSync(path, { encoding: "utf-8" });
+  FindMarker(signal, 4);
+  FindMarker(signal, 14);
+};
 
-  const test1 = "bvwbjplbgvbhsrlpgdmjqwftvncz";
-  const test2 = "nppdvjthqldpwncqszvftbrmjlhg";
-  const test3 = "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg";
-  const test4 = "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw";
-
-  const signal = rawSignal;
-
+const FindMarker = (signal: string, uniqueCharCount: number) => {
   for (let pointer = 0; pointer < signal.length; pointer++) {
     const checkSet = new Set();
-    checkSet.add(signal.charAt(pointer));
-    checkSet.add(signal.charAt(pointer + 1));
-    checkSet.add(signal.charAt(pointer + 2));
-    checkSet.add(signal.charAt(pointer + 3));
-    if (checkSet.size == 4) {
-      console.log(checkSet);
-      console.log(
-        "First marker for start-of-packet after character",
-        pointer + 4
-      );
-      pointer = signal.length;
+    for (let charPulled = 0; charPulled < uniqueCharCount; charPulled++) {
+      checkSet.add(signal.charAt(pointer + charPulled));
     }
-  }
-
-  for (let pointer = 0; pointer < signal.length; pointer++) {
-    const checkSet = new Set();
-    checkSet.add(signal.charAt(pointer));
-    checkSet.add(signal.charAt(pointer + 1));
-    checkSet.add(signal.charAt(pointer + 2));
-    checkSet.add(signal.charAt(pointer + 3));
-    checkSet.add(signal.charAt(pointer + 4));
-    checkSet.add(signal.charAt(pointer + 5));
-    checkSet.add(signal.charAt(pointer + 6));
-    checkSet.add(signal.charAt(pointer + 7));
-    checkSet.add(signal.charAt(pointer + 8));
-    checkSet.add(signal.charAt(pointer + 9));
-    checkSet.add(signal.charAt(pointer + 10));
-    checkSet.add(signal.charAt(pointer + 11));
-    checkSet.add(signal.charAt(pointer + 12));
-    checkSet.add(signal.charAt(pointer + 13));
-    if (checkSet.size == 14) {
-      console.log(checkSet);
-      console.log(
-        "First marker for start-of-message after character",
-        pointer + 14
-      );
+    if (checkSet.size == uniqueCharCount) {
+      console.log("First marker after character", pointer + uniqueCharCount);
       pointer = signal.length;
     }
   }
