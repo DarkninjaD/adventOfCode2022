@@ -3,9 +3,10 @@ import { CaloriesCount } from "./Day1/CaloriesCount.js";
 import { RPSScoreCard } from "./Day2/RPSScoreCard.js";
 import { decoupleWork } from "./Day4/decoupleWork.js";
 import { CargoCrane } from "./Day5/CargoCrane.js";
+import { ElfSignalDecoder } from "./Day6/ElfSignalDecoder.js";
 
 const sample = 1;
-const Day: number = 5;
+const Day: number = 6;
 const dataPath = "./src/data/";
 
 if (sample) {
@@ -24,6 +25,9 @@ if (sample) {
       break;
     case 5:
       CargoCrane(`${dataPath}/Day5`);
+      break;
+    case 6:
+      ElfSignalDecoder(`${dataPath}/ElfSignal.txt`);
       break;
   }
 } else {

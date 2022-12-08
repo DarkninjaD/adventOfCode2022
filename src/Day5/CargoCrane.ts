@@ -27,11 +27,20 @@ export const CargoCrane = (path: PathOrFileDescriptor) => {
   const cleanStack = Startup(baseStack, stack);
   console.log("before", cleanStack);
 
+  // Part one Handling the info
+  // allInstructions.forEach((instructions) => {
+  //   for (let moves = 0; moves < instructions.MoveAmount; moves++) {
+  //     const movingCreate = cleanStack[instructions.FromLocation - 1].shift();
+  //     cleanStack[instructions.ToLocation - 1].unshift(movingCreate);
+  //   }
+  // });
+  // Part Two handling the info
   allInstructions.forEach((instructions) => {
+    const movingCreate = [];
     for (let moves = 0; moves < instructions.MoveAmount; moves++) {
-      const movingCreate = cleanStack[instructions.FromLocation - 1].shift();
-      cleanStack[instructions.ToLocation - 1].unshift(movingCreate);
+      movingCreate.push(cleanStack[instructions.FromLocation - 1].shift());
     }
+    cleanStack[instructions.ToLocation - 1].unshift(...movingCreate);
   });
 
   console.log("After", cleanStack);
