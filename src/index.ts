@@ -6,7 +6,7 @@ import { CargoCrane } from "./Day5/CargoCrane.js";
 import { ElfSignalDecoder } from "./Day6/ElfSignalDecoder.js";
 import { ElfosDiskClean } from "./Day7/ElfosDiskClean.js";
 
-const sample = 1;
+const sample = 0;
 const Day: number = 7;
 const dataPath = "./src/data/";
 
@@ -49,6 +49,11 @@ if (sample) {
       decoupleWork(`${dataPath}/sampleSectionAssignmentPair.txt`);
       break;
     case 5:
+      break;
+    case 6:
+      break;
+    case 7:
+      ElfosDiskClean(`${dataPath}/sampleElfosOutput.txt`);
       break;
   }
 }
