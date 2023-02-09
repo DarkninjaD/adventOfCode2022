@@ -4,10 +4,11 @@ import { RPSScoreCard } from "./Day2/RPSScoreCard.js";
 import { decoupleWork } from "./Day4/decoupleWork.js";
 import { CargoCrane } from "./Day5/CargoCrane.js";
 import { ElfSignalDecoder } from "./Day6/ElfSignalDecoder.js";
+import { TreeCount } from "./Day8/TreeTopHouse.js";
 import { ElfosDiskClean } from "./Day7/ElfosDiskClean.js";
 
-const sample = 0;
-const Day: number = 7;
+const sample = 1;
+const Day: number = 8;
 const dataPath = "./src/data/";
 
 if (sample) {
@@ -32,6 +33,8 @@ if (sample) {
       break;
     case 7:
       ElfosDiskClean(`${dataPath}/ElfosOutput.txt`);
+    case 8:
+      TreeCount(`${dataPath}/Day8/Day8_data.txt`);
       break;
   }
 } else {
@@ -54,6 +57,8 @@ if (sample) {
       break;
     case 7:
       ElfosDiskClean(`${dataPath}/sampleElfosOutput.txt`);
+    case 8:
+      TreeCount(`${dataPath}/Day8/Day8_example.txt`);
       break;
   }
 }
