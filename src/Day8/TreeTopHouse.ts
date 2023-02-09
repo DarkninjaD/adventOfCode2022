@@ -21,12 +21,12 @@ Node link list => maybe?? think mine sweeper but backwards.
 */
 
 import fs, { PathOrFileDescriptor } from "fs";
+import { TestLog } from "./TestLog.js";
 
 export const TreeCount = (path: PathOrFileDescriptor) => {
   const treeMap = fs.readFileSync(path, { encoding: "utf-8" }).split(/\n/);
   console.log("===== Tree Count For Advent of Code 2022 in TypeScript ======");
   const MapForest = new Forest(treeMap);
-  // console.log("===== This is the whole map:", MapForest.Forest, " ==========");
   console.log(
     "==== Forest Info ====",
     "\nForest Width:",
@@ -37,109 +37,37 @@ export const TreeCount = (path: PathOrFileDescriptor) => {
     MapForest.Forest.length
   );
 
-  let internalTreeCount = 0;
-  let externalTreeCount = (MapForest.Width - 2) * 2 + MapForest.Length * 2;
+  let TreeCount = 0;
+  let BestTree = new Tree(0);
+  BestTree.scenicScoreTotal = 0;
+  const externalTreeCount = (MapForest.Width - 2) * 2 + MapForest.Length * 2;
 
-  MapForest.Forest.forEach((elm) =>
-    elm.forEach((tree) => {
-      if (tree.checkAllPath()) {
-        // console.log("This is a tree i can see", tree);
-        internalTreeCount++;
+  MapForest.Forest.forEach((woods, row) =>
+    woods.forEach((currentTree, colum) => {
+      currentTree.location.row = row;
+      currentTree.location.colum = colum;
+      if (currentTree.checkAllPath()) {
+        TreeCount++;
+      }
+      if (currentTree.scenicScoreTotal > BestTree.scenicScoreTotal) {
+        BestTree = currentTree;
       }
     })
   );
+
   console.log(
-    " This is the amount of internal Trees that count",
-    internalTreeCount,
-    "\n This is the amount of external Tree that count",
+    "This is the amount of internal Trees that count",
+    TreeCount - externalTreeCount,
+    "\nThis is the amount of external Tree that count",
     externalTreeCount,
-    "\n Total amount of Trees that can be seen is",
-    internalTreeCount + externalTreeCount
+    "\nTotal amount of Trees that can be seen is",
+    TreeCount,
+    "\n\nThe Best Tree in the forest is",
+    BestTree.info()
   );
 
-  console.log(
-    "\nTest 1",
-    "\nPath North should be false =",
-    MapForest.Forest[1][1].checkPath("North"),
-    "\nPath East  should be true =",
-    MapForest.Forest[1][1].checkPath("East"),
-    "\nPath South should be true =",
-    MapForest.Forest[1][1].checkPath("South"),
-    "\nPath West  should be false =",
-    MapForest.Forest[1][1].checkPath("West"),
-    "this Tree should be Visible ie true",
-    MapForest.Forest[1][1].checkAllPath()
-  );
-
-  console.log(
-    "\nTest 2",
-    "\nPath North should be false =",
-    MapForest.Forest[1][2].checkPath("North"),
-    "\nPath East  should be false =",
-    MapForest.Forest[1][2].checkPath("East"),
-    "\nPath South should be true =",
-    MapForest.Forest[1][2].checkPath("South"),
-    "\nPath West  should be true =",
-    MapForest.Forest[1][2].checkPath("West"),
-    "this Tree should be Visible ie true",
-    MapForest.Forest[1][2].checkAllPath()
-  );
-
-  console.log(
-    "\nTest 3",
-    "\nPath North should be true =",
-    MapForest.Forest[1][3].checkPath("North"),
-    "\nPath East  should be true =",
-    MapForest.Forest[1][3].checkPath("East"),
-    "\nPath South should be true =",
-    MapForest.Forest[1][3].checkPath("South"),
-    "\nPath West  should be true =",
-    MapForest.Forest[1][3].checkPath("West"),
-    "this Tree should not be Visible ie false",
-    MapForest.Forest[1][3].checkAllPath()
-  );
-
-  console.log(
-    "\nTest 4",
-    "\nPath North should be true =",
-    MapForest.Forest[2][1].checkPath("North"), // 5 -> 5 -> 0
-    "\nPath East  should be false =",
-    MapForest.Forest[2][1].checkPath("East"),
-    "\nPath South should be true =",
-    MapForest.Forest[2][1].checkPath("South"),
-    "\nPath West  should be true =",
-    MapForest.Forest[2][1].checkPath("West"),
-    "this Tree should be Visible ie true",
-    MapForest.Forest[2][1].checkAllPath()
-  );
-
-  console.log(
-    "\nTest 5",
-    "\nPath North should be true =",
-    MapForest.Forest[2][2].checkPath("North"),
-    "\nPath East  should be true =",
-    MapForest.Forest[2][2].checkPath("East"), // 3 -> 3 -> 2
-    "\nPath South should be true =",
-    MapForest.Forest[2][2].checkPath("South"),
-    "\nPath West  should be true =",
-    MapForest.Forest[2][2].checkPath("West"),
-    "this Tree should not be Visible ie false",
-    MapForest.Forest[2][2].checkAllPath()
-  );
-
-  console.log(
-    "\nTest 6",
-    "\nPath North should be true =",
-    MapForest.Forest[2][3].checkPath("North"),
-    "\nPath East  should be false =",
-    MapForest.Forest[2][3].checkPath("East"),
-    "\nPath South should be true =",
-    MapForest.Forest[2][3].checkPath("South"),
-    "\nPath West  should be true =",
-    MapForest.Forest[2][3].checkPath("West"),
-    "this Tree should be Visible ie true",
-    MapForest.Forest[2][3].checkAllPath()
-  );
+  if (false) TestLog(MapForest);
+  // for the use of debugging. (not a great way to test but i didn't want to set up jest)
 };
 
 class Forest {
@@ -210,6 +138,9 @@ class Forest {
 
 class Tree {
   treeHeight: Number;
+  scenicScore: { North: number; South: number; East: number; West: number };
+  scenicScoreTotal: number;
+  location: { row: number; colum: number };
   NTree: Tree | null;
   STree: Tree | null;
   ETree: Tree | null;
@@ -217,18 +148,38 @@ class Tree {
 
   constructor(height: Number) {
     this.treeHeight = height;
+    this.scenicScore = { North: 0, South: 0, East: 0, West: 0 };
+    this.location = { row: 0, colum: 0 };
+  }
+
+  info() {
+    return `\nTree height: ${this.treeHeight}\nTree scenicScore: ${this.scenicScoreTotal}\nTree location is: row:${this.location.row}, colum:${this.location.colum}`;
+  }
+  genScenicScore() {
+    this.checkPath("North", true);
+    this.checkPath("East", true);
+    this.checkPath("South", true);
+    this.checkPath("West", true);
+    this.scenicScoreTotal =
+      this.scenicScore.North *
+      this.scenicScore.West *
+      this.scenicScore.East *
+      this.scenicScore.South;
   }
 
   private isTreeVisible(
     OgTree: Tree,
     headingTree: Tree | null,
-    Heading: cardinalDirection
+    Heading: cardinalDirection,
+    count: boolean
   ): boolean {
     if (headingTree != null) {
       if (headingTree.treeHeight >= OgTree.treeHeight) {
+        if (count) OgTree.scenicScore[Heading]++;
         return false;
       } else {
-        return this.checkPath(Heading, OgTree, headingTree);
+        if (count) OgTree.scenicScore[Heading]++;
+        return this.checkPath(Heading, count, OgTree, headingTree);
       }
     } else {
       return true;
@@ -236,22 +187,24 @@ class Tree {
   }
   checkPath(
     Heading: cardinalDirection,
+    count: boolean = false,
     OgTree: Tree = this,
     headingTree: Tree = this
   ): boolean {
     switch (Heading) {
       case "North":
-        return this.isTreeVisible(OgTree, headingTree.NTree, Heading);
+        return this.isTreeVisible(OgTree, headingTree.NTree, Heading, count);
       case "South":
-        return this.isTreeVisible(OgTree, headingTree.STree, Heading);
+        return this.isTreeVisible(OgTree, headingTree.STree, Heading, count);
       case "East":
-        return this.isTreeVisible(OgTree, headingTree.ETree, Heading);
+        return this.isTreeVisible(OgTree, headingTree.ETree, Heading, count);
       case "West":
-        return this.isTreeVisible(OgTree, headingTree.WTree, Heading);
+        return this.isTreeVisible(OgTree, headingTree.WTree, Heading, count);
     }
   }
   // returns true if any path come back true
   checkAllPath() {
+    this.genScenicScore();
     if (
       this.checkPath("North")! ||
       this.checkPath("East")! ||

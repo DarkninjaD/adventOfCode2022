@@ -6,7 +6,7 @@ import { CargoCrane } from "./Day5/CargoCrane.js";
 import { ElfSignalDecoder } from "./Day6/ElfSignalDecoder.js";
 import { TreeCount } from "./Day8/TreeTopHouse.js";
 
-const sample = 0;
+const sample = 1;
 const Day: number = 8;
 const dataPath = "./src/data/";
 
