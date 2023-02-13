@@ -6,9 +6,10 @@ import { CargoCrane } from "./Day5/CargoCrane.js";
 import { ElfSignalDecoder } from "./Day6/ElfSignalDecoder.js";
 import { TreeCount } from "./Day8/TreeTopHouse.js";
 import { ElfosDiskClean } from "./Day7/ElfosDiskClean.js";
+import { PlanckSnake } from "./Day9/PlanckSnake.js";
 
-const sample = 1;
-const Day: number = 8;
+const sample = 0;
+const Day: number = 9;
 const dataPath = "./src/data/";
 
 if (sample) {
@@ -36,6 +37,9 @@ if (sample) {
     case 8:
       TreeCount(`${dataPath}/Day8/Day8_data.txt`);
       break;
+    case 9:
+      PlanckSnake(`$${dataPath}/Day9/realPath.txt`);
+      break;
   }
 } else {
   switch (Day) {
@@ -57,8 +61,12 @@ if (sample) {
       break;
     case 7:
       ElfosDiskClean(`${dataPath}/sampleElfosOutput.txt`);
+      break;
     case 8:
       TreeCount(`${dataPath}/Day8/Day8_example.txt`);
+      break;
+    case 9:
+      PlanckSnake(`${dataPath}Day9/examplePath.txt`);
       break;
   }
 }
