@@ -108,6 +108,8 @@ class Snake {
     let xAmount = this.headPosition.x - this.tailPosition.x;
     let yAmount = this.headPosition.y - this.tailPosition.y;
 
+    // it's throwing a case problem. xAmount and yAmount
+    // it's the cornier, turning a cornier is a problem
     if (!this.isTouching() && (xAmount === 0 || yAmount === 0)) {
       this.tailPosition[action] += amount;
       console.log("tail moving");
