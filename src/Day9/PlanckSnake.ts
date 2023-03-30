@@ -142,11 +142,14 @@ class Snake {
 
 function gameLoop(game: Snake) {
   let endVal = false;
+  console.log("Your now in the game loop type 'help' to see all options");
   while (!endVal) {
     let userResponse = prompt("> ").split(" ");
     switch (userResponse[0].toLowerCase()) {
       case "help":
-        console.log("type 'end' to end prompt");
+        console.log(
+          "'end' -> to end prompt\n'step' -> to step through\n'info' -> to display info on the game"
+        );
         break;
       case "end":
         endVal = true;
