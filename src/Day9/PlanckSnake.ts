@@ -11,6 +11,8 @@ type snakeCommand = {
   Directions: Directions;
   Amount: number;
 };
+type cords = { x: number; y: number };
+
 export const PlanckSnake = (path: PathOrFileDescriptor) => {
   const snakePathRaw = fs.readFileSync(path, { encoding: "utf-8" }).split(/\n/);
   const snakePath = snakePathRaw.map((elm): snakeCommand => {
@@ -25,7 +27,6 @@ export const PlanckSnake = (path: PathOrFileDescriptor) => {
   gameLoop(headTail);
 };
 
-type cords = { x: number; y: number };
 class Snake {
   private commandList = [];
   private atCommand: number;
@@ -59,7 +60,6 @@ class Snake {
   step(amount: number = 1): void {
     if (this.commandList === null)
       return console.log("Please load command list before calling step");
-
     if (amount === 0) {
       console.log("running through the remaining command list.");
       //TODO//
@@ -72,57 +72,36 @@ class Snake {
   }
 
   private move(command: snakeCommand, positions: cords = this.headPosition) {
+    let axis: string;
+    let amount: number;
     if (command.Directions === "D" || command.Directions === "U") {
-      for (let i = 0; i < command.Amount; i++) {
-        let action = "x";
-        if (command.Directions === "D") {
-          let amount = -1;
-          positions[action] += amount;
-          this.tailTrail(action, amount);
-        }
-        if (command.Directions === "U") {
-          let amount = +1;
-          positions[action] += amount;
-          this.tailTrail(action, amount);
-        }
-      }
+      axis = "x";
+      amount = command.Directions === "D" ? -1 : +1;
     }
     if (command.Directions === "L" || command.Directions === "R") {
-      let action = "y";
-      for (let i = 0; i < command.Amount; i++) {
-        if (command.Directions === "L") {
-          let amount = -1;
-          positions[action] += amount;
-          this.tailTrail(action, amount);
-        }
-        if (command.Directions === "R") {
-          let amount = +1;
-          positions[action] += amount;
-          this.tailTrail(action, amount);
-        }
-      }
+      axis = "y";
+      amount = command.Directions === "L" ? -1 : +1;
+    }
+    for (let i = 0; i < command.Amount; i++) {
+      positions[axis as keyof cords] += amount;
+      this.tailTrail(axis, amount);
     }
   }
 
-  private tailTrail(action, amount) {
-    let xAmount = this.headPosition.x - this.tailPosition.x;
-    let yAmount = this.headPosition.y - this.tailPosition.y;
+  private tailTrail(axis: string, amount: number) {
+    const xDif = this.headPosition.x - this.tailPosition.x;
+    const yDif = this.headPosition.y - this.tailPosition.y;
 
-    if (!this.isTouching() && (xAmount === 0 || yAmount === 0)) {
-      this.tailPosition[action] += amount;
+    if (!this.isTouching(xDif, yDif) && (xDif === 0 || yDif === 0)) {
+      this.tailPosition[axis] += amount;
       console.log("tail moving");
     } else {
-      console.log("CASE PROB", xAmount, yAmount);
+      console.log("CASE PROB", xDif, yDif);
     }
   }
 
-  private isTouching(): boolean {
-    return Math.hypot(
-      this.headPosition.x - this.tailPosition.x,
-      this.headPosition.y - this.tailPosition.y
-    ) > 1
-      ? false
-      : true;
+  private isTouching(xDif: number, yDif: number): boolean {
+    return Math.hypot(xDif, yDif) > 1 ? false : true;
   }
 
   info() {
@@ -138,7 +117,7 @@ class Snake {
   }
 }
 
-function gameLoop(game: Snake) {
+const gameLoop = (game: Snake) => {
   let endVal = false;
   console.log("Your now in the game loop type 'help' to see all options");
   while (!endVal) {
@@ -165,4 +144,4 @@ function gameLoop(game: Snake) {
         break;
     }
   }
-}
+};
