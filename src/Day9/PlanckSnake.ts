@@ -1,5 +1,6 @@
 import fs, { PathOrFileDescriptor } from "fs";
 import promptSync from "prompt-sync";
+import chalk from "chalk";
 const prompt = promptSync();
 
 /*
@@ -33,6 +34,7 @@ class Snake {
   private headPosition: cords;
   private tailPosition: cords;
   private startPosition: cords;
+  private screenSize: cords = { x: 8, y: 8 };
 
   constructor(defaultStart = { x: 0, y: 0 }) {
     this.startPosition = { ...defaultStart };
@@ -57,34 +59,66 @@ class Snake {
     return;
   }
 
-  step(amount: number = 1): void {
+  async step(amount: number = 1): Promise<void> {
     if (this.commandList === null)
       return console.log("Please load command list before calling step");
+    if (this.atCommand === this.commandList.length)
+      return console.log("we are at the end of the list");
     if (amount === 0) {
       console.log("running through the remaining command list.");
       //TODO//
     }
 
     for (let i = 0; i < amount; i++) {
-      this.move(this.commandList[this.atCommand]);
+      await this.move(this.commandList[this.atCommand]).then(() => {});
       this.atCommand++;
     }
   }
 
-  private move(command: snakeCommand, positions: cords = this.headPosition) {
+  private async move(
+    command: snakeCommand,
+    positions: cords = this.headPosition
+  ) {
     let axis: string;
     let amount: number;
+
     if (command.Directions === "D" || command.Directions === "U") {
-      axis = "x";
+      axis = "y";
       amount = command.Directions === "D" ? -1 : +1;
     }
     if (command.Directions === "L" || command.Directions === "R") {
-      axis = "y";
+      axis = "x";
       amount = command.Directions === "L" ? -1 : +1;
     }
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
     for (let i = 0; i < command.Amount; i++) {
       positions[axis as keyof cords] += amount;
+      await sleep(1000).then(() => {
+        console.clear();
+        console.log(this.show());
+        console.log(
+          "Tail is Touching? " +
+            this.isTouching(
+              this.headPosition.x - this.tailPosition.x,
+              this.headPosition.y - this.tailPosition.y
+            )
+        );
+      });
       this.tailTrail(axis, amount);
+      // console.clear();
+      await sleep(1000).then(() => {
+        console.clear();
+        console.log(this.show());
+        console.log(
+          "Tail is Touching? " +
+            this.isTouching(
+              this.headPosition.x - this.tailPosition.x,
+              this.headPosition.y - this.tailPosition.y
+            )
+        );
+      });
     }
   }
 
@@ -92,16 +126,15 @@ class Snake {
     const xDif = this.headPosition.x - this.tailPosition.x;
     const yDif = this.headPosition.y - this.tailPosition.y;
 
-    if (!this.isTouching(xDif, yDif) && (xDif === 0 || yDif === 0)) {
+    if (!this.isTouching(xDif, yDif)) {
       this.tailPosition[axis] += amount;
-      console.log("tail moving");
-    } else {
-      console.log("CASE PROB", xDif, yDif);
+      // TODO -> if it's not touching check which way is the right way to go.
+      // [ ] -> another functions to test if the isTouching is a 1 or 1.4
     }
   }
 
   private isTouching(xDif: number, yDif: number): boolean {
-    return Math.hypot(xDif, yDif) > 1 ? false : true;
+    return Math.hypot(xDif, yDif) > 1.5 ? false : true;
   }
 
   info() {
@@ -115,9 +148,38 @@ class Snake {
       this.commandList.length
     );
   }
+  show(): string {
+    const head: cords = { x: 0, y: this.screenSize.y - 1 };
+    let screen = [];
+    for (let i = 0; i < this.screenSize.x * this.screenSize.y; i++) {
+      head.x = i % this.screenSize.y;
+      if (i % this.screenSize.y === 0 && i != 0) {
+        head.y -= 1;
+      }
+      screen[i] = ".";
+      if (this.cordMatch(head, this.startPosition)) {
+        screen[i] = "s";
+      }
+      if (this.cordMatch(head, this.tailPosition)) {
+        screen[i] = "T";
+      }
+      if (this.cordMatch(head, this.headPosition)) {
+        screen[i] = "H";
+      }
+      if (i % this.screenSize.y === 0 && i != 0) {
+        screen[i] = "\n" + screen[i];
+      }
+    }
+    return screen.join("");
+  }
+
+  private cordMatch(first: cords, second: cords): Boolean {
+    if (first.x === second.x && first.y === second.y) return true;
+    return false;
+  }
 }
 
-const gameLoop = (game: Snake) => {
+const gameLoop = async (game: Snake) => {
   let endVal = false;
   console.log("Your now in the game loop type 'help' to see all options");
   while (!endVal) {
@@ -132,15 +194,20 @@ const gameLoop = (game: Snake) => {
         endVal = true;
         break;
       case "step":
-        console.log("stepping");
+        // console.log("stepping");
         if (userResponse.length > 1 && !Number.isNaN(userResponse[1])) {
           game.step(+userResponse[1]);
+          // console.log(game.show());
         } else {
-          game.step();
+          await game.step().then(() => {});
+          // console.log(game.show());
         }
         break;
       case "info":
         game.info();
+        break;
+      case "show":
+        console.log(game.show());
         break;
     }
   }
