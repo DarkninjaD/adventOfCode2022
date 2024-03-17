@@ -8,8 +8,8 @@ import { TreeCount } from "./Day8/TreeTopHouse.js";
 import { ElfosDiskClean } from "./Day7/ElfosDiskClean.js";
 import { PlanckSnake } from "./Day9/PlanckSnake.js";
 
-const sample = 0;
-const Day: number = 9;
+const sample = 1;
+const Day: number = 8;
 const dataPath = "./src/data/";
 
 if (sample) {
